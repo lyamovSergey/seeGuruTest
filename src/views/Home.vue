@@ -1,18 +1,46 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <section>
+    <h1 class="page-title">List</h1>
+    <div class="users-list">
+      <UserItem
+        v-for="(user, index) in users"
+        :key="index"
+        :userInfo="user"
+        @removeUser="removeUser($event)"
+      ></UserItem>
+    </div>
+  </section>
 </template>
-
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import UserItem from "@/components/UserItem.vue";
 
 export default {
-  name: 'Home',
   components: {
-    HelloWorld
-  }
-}
+    UserItem,
+  },
+  data: () => ({
+    users: [],
+    usersListUrl: "https://jsonplaceholder.typicode.com/users",
+  }),
+  methods: {
+    getUserList() {
+      fetch(this.usersListUrl, {})
+        .then((response) => response.json())
+        .then((data) => (this.users = data.slice(0, 5)));
+    },
+    removeUser(userId) {
+      for (let i = this.users.length; i--; ) {
+        if (this.users[i].id === userId && this.users.length > 1) {
+          this.users.splice(i, 1);
+        }
+      }
+    },
+  },
+  mounted() {
+    this.getUserList();
+    if(localStorage.user){
+      localStorage.removeItem('user')
+    }
+  },
+};
 </script>
